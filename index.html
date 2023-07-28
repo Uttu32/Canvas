@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CanvasData.html</title>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        let canvas = document.getElementById("myCanvas");
+        let cntx = canvas.getContext("2d");
+
+        let fontSize = 13;
+        let fontColor = "yellow";
+
+        // cntx.fillStyle = "#000000";
+        cntx.fillRect(0, 0, canvas.width, canvas.height);
+
+        cntx.font = "bold 20px arial";
+        cntx.fillStyle = fontColor;
+        cntx.textAlign = "center";
+        cntx.textBaseline = "middle";
+
+        let char = "T";
+        cntx.fillText(char, canvas.width / 2, canvas.height / 2);
+
+        let downloadLink = document.getElementById("downloadLink");
+        downloadLink.addEventListener("click", function () {
+          let imgData = cntx.getImageData(0, 0, canvas.width, canvas.height);
+          let pixel = imgData.data;
+          let hexData = "";
+
+          let count = 0;
+
+          for (let i = 0; i < pixel.length; i += 4) {
+            count++;
+            let r = pixel[i];
+            let g = pixel[i + 1];
+            let b = pixel[i + 2];
+            if (count === 16) {
+              let hex =
+                "#" +
+                ((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1);
+              hexData += hex + ",\n";
+              count = 0;
+            } else {
+              let hex =
+                "#" +
+                ((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1);
+              hexData += hex + ", ";
+            }
+          }
+          let fileBlob = new Blob([hexData], { type: "text/plain" });
+          downloadLink.href = URL.createObjectURL(fileBlob);
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <canvas id="myCanvas" width="16" height="34"></canvas>
+    <br /><br />
+    <a href="#" style="color: orangered;font-size: larger; position: relative; top: -20px; left: 20px;" id="downloadLink" download="pixel.data.txt"> Download</a>
+  </body>
+</html>
